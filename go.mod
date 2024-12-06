@@ -8,7 +8,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/consul/api v1.29.4
-	github.com/mooncake9527/x v1.0.5
+	github.com/mooncake9527/x v1.0.6
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/redis/go-redis/v9 v9.6.1
 	github.com/shamsher31/goimgext v1.0.0
