@@ -89,7 +89,7 @@ func Run() {
 		WriteTimeout:   time.Duration(Cfg.Server.GetWriteTimeout()) * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	fmt.Println(LOGO)
+	//fmt.Println(LOGO)
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
