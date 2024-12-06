@@ -7,35 +7,42 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewService(dbname string) *BaseService {
-	return &BaseService{
+func NewDao(dbname string) *BaseDao {
+	return &BaseDao{
 		DbName: dbname,
 	}
 }
 
-type BaseService struct {
+type BaseDao struct {
 	DbName string
 }
 
 /*
 * 获取数据库
  */
-func (s *BaseService) DB() *gorm.DB {
+func (s *BaseDao) DB() *gorm.DB {
 	return core.Db(s.DbName)
 }
 
 /*
 * 获取缓存
  */
-func (s *BaseService) Cache() cache.ICache {
+func (s *BaseDao) Cache() cache.ICache {
 	return core.Cache
 }
 
 /*
 * 创建 结构体model
  */
-func (s *BaseService) Create(model any) error {
+func (s *BaseDao) Create(model any) error {
 	if err := s.DB().Create(model).Error; err != nil {
+		return xerror.New(err.Error())
+	}
+	return nil
+}
+
+func (s *BaseDao) CreateTx(tx *gorm.DB, model any) error {
+	if err := tx.Create(model).Error; err != nil {
 		return xerror.New(err.Error())
 	}
 	return nil
@@ -44,8 +51,15 @@ func (s *BaseService) Create(model any) error {
 /*
 * 更新整个模型 结构体model 注意空值
  */
-func (s *BaseService) Save(model any) error {
+func (s *BaseDao) Save(model any) error {
 	if err := s.DB().Save(model).Error; err != nil {
+		return xerror.New(err.Error())
+	}
+	return nil
+}
+
+func (s *BaseDao) SaveTx(tx *gorm.DB, model any) error {
+	if err := tx.Save(model).Error; err != nil {
 		return xerror.New(err.Error())
 	}
 	return nil
@@ -54,8 +68,15 @@ func (s *BaseService) Save(model any) error {
 /*
 * 条件跟新
  */
-func (s *BaseService) UpdateWhere(model any, where any, updates map[string]any) error {
+func (s *BaseDao) UpdateWhere(model any, where any, updates map[string]any) error {
 	if err := s.DB().Model(model).Where(where).Updates(updates).Error; err != nil {
+		return xerror.New(err.Error())
+	}
+	return nil
+}
+
+func (s *BaseDao) UpdateWhereTx(tx *gorm.DB, model any, where any, updates map[string]any) error {
+	if err := tx.Model(model).Where(where).Updates(updates).Error; err != nil {
 		return xerror.New(err.Error())
 	}
 	return nil
@@ -64,8 +85,15 @@ func (s *BaseService) UpdateWhere(model any, where any, updates map[string]any) 
 /*
 * 模型更新
  */
-func (s *BaseService) UpdateWhereModel(where any, updates any) error {
+func (s *BaseDao) UpdateWhereModel(where any, updates any) error {
 	if err := s.DB().Where(where).Updates(updates).Error; err != nil {
+		return xerror.New(err.Error())
+	}
+	return nil
+}
+
+func (s *BaseDao) UpdateWhereModelTx(tx *gorm.DB, where any, updates any) error {
+	if err := tx.Where(where).Updates(updates).Error; err != nil {
 		return xerror.New(err.Error())
 	}
 	return nil
@@ -74,8 +102,15 @@ func (s *BaseService) UpdateWhereModel(where any, updates any) error {
 /*
 * 根据模型id更新
  */
-func (s *BaseService) UpdateById(model any) error {
+func (s *BaseDao) UpdateById(model any) error {
 	if err := s.DB().Updates(model).Error; err != nil {
+		return xerror.New(err.Error())
+	}
+	return nil
+}
+
+func (s *BaseDao) UpdateByIdTx(tx *gorm.DB, model any) error {
+	if err := tx.Updates(model).Error; err != nil {
 		return xerror.New(err.Error())
 	}
 	return nil
@@ -84,8 +119,15 @@ func (s *BaseService) UpdateById(model any) error {
 /*
 * 条件删除，模型
  */
-func (s *BaseService) DelWhere(model any) error {
+func (s *BaseDao) DelWhere(model any) error {
 	if err := s.DB().Delete(model).Error; err != nil {
+		return xerror.New(err.Error())
+	}
+	return nil
+}
+
+func (s *BaseDao) DelWhereTx(tx *gorm.DB, model any) error {
+	if err := tx.Delete(model).Error; err != nil {
 		return xerror.New(err.Error())
 	}
 	return nil
@@ -94,8 +136,15 @@ func (s *BaseService) DelWhere(model any) error {
 /*
 * 条件删除，模型 where 为map
  */
-func (s *BaseService) DelWhereMap(model any, where map[string]any) error {
+func (s *BaseDao) DelWhereMap(model any, where map[string]any) error {
 	if err := s.DB().Model(model).Delete(where).Error; err != nil {
+		return xerror.New(err.Error())
+	}
+	return nil
+}
+
+func (s *BaseDao) DelWhereMapTx(tx *gorm.DB, model any, where map[string]any) error {
+	if err := tx.Model(model).Delete(where).Error; err != nil {
 		return xerror.New(err.Error())
 	}
 	return nil
@@ -104,8 +153,15 @@ func (s *BaseService) DelWhereMap(model any, where map[string]any) error {
 /*
 *多个id删除
  */
-func (s *BaseService) DelIds(model any, ids any) error {
+func (s *BaseDao) DelIds(model any, ids any) error {
 	if err := s.DB().Delete(model, ids).Error; err != nil {
+		return xerror.New(err.Error())
+	}
+	return nil
+}
+
+func (s *BaseDao) DelIdsTx(tx *gorm.DB, model any, ids any) error {
+	if err := tx.Delete(model, ids).Error; err != nil {
 		return xerror.New(err.Error())
 	}
 	return nil
@@ -114,7 +170,7 @@ func (s *BaseService) DelIds(model any, ids any) error {
 /*
 * 根据id获取模型
  */
-func (s *BaseService) Get(id any, model any) error {
+func (s *BaseDao) Get(id any, model any) error {
 	if err := s.DB().First(model, id).Error; err != nil {
 		return xerror.New(err.Error())
 	}
@@ -126,7 +182,7 @@ func (s *BaseService) Get(id any, model any) error {
 * where: where 查询条件model
 * models: 代表查询返回的model数组
  */
-func (s *BaseService) GetByWhere(where any, models any) error {
+func (s *BaseDao) GetByWhere(where any, models any) error {
 	if err := s.DB().Where(where).Find(models).Error; err != nil {
 		return xerror.New(err.Error())
 	}
@@ -138,7 +194,7 @@ func (s *BaseService) GetByWhere(where any, models any) error {
 * where: 条件查询
 * models: 代表查询返回的model数组
  */
-func (s *BaseService) GetByMap(where map[string]any, models any) error {
+func (s *BaseDao) GetByMap(where map[string]any, models any) error {
 	if err := s.DB().Where(where).Find(models).Error; err != nil {
 		return xerror.New(err.Error())
 	}
@@ -150,7 +206,7 @@ func (s *BaseService) GetByMap(where map[string]any, models any) error {
 * model: 查询条件
 * count: 查询条数
  */
-func (s *BaseService) Count(model any, count *int64) error {
+func (s *BaseDao) Count(model any, count *int64) error {
 	if err := s.DB().Model(model).Where(model).Count(count).Error; err != nil {
 		return xerror.New(err.Error())
 	}
@@ -162,7 +218,7 @@ func (s *BaseService) Count(model any, count *int64) error {
 * model: 查询条件
 * count: 查询条数
  */
-func (s *BaseService) CountByMap(where map[string]any, model any, count *int64) error {
+func (s *BaseDao) CountByMap(where map[string]any, model any, count *int64) error {
 	if err := s.DB().Model(model).Where(where).Count(count).Error; err != nil {
 		return xerror.New(err.Error())
 	}
@@ -173,7 +229,7 @@ func (s *BaseService) CountByMap(where map[string]any, model any, count *int64) 
 *	查询
 * where 实现Query接口
  */
-func (s *BaseService) Query(where Query, models any) error {
+func (s *BaseDao) Query(where Query, models any) error {
 	if err := s.DB().Scopes(s.MakeCondition(where)).Find(models).Error; err != nil {
 		return xerror.New(err.Error())
 	}
@@ -183,7 +239,7 @@ func (s *BaseService) Query(where Query, models any) error {
 /*
 * 分页获取
  */
-func (s *BaseService) Page(where any, data any, total *int64, limit, offset int) error {
+func (s *BaseDao) Page(where any, data any, total *int64, limit, offset int) error {
 	if err := s.DB().Where(where).Limit(limit).Offset(offset).
 		Find(data).Limit(-1).Offset(-1).Count(total).Error; err != nil {
 		return xerror.New(err.Error())
@@ -194,7 +250,7 @@ func (s *BaseService) Page(where any, data any, total *int64, limit, offset int)
 /*
 * 分页获取
  */
-func (s *BaseService) QueryPage(where Query, models any, total *int64, limit, offset int) error {
+func (s *BaseDao) QueryPage(where Query, models any, total *int64, limit, offset int) error {
 	if err := s.DB().Scopes(s.MakeCondition(where)).Limit(limit).Offset(offset).
 		Find(models).Limit(-1).Offset(-1).Count(total).Error; err != nil {
 		return xerror.New(err.Error())
@@ -205,7 +261,7 @@ func (s *BaseService) QueryPage(where Query, models any, total *int64, limit, of
 /*
 * 分页组装
  */
-func (s *BaseService) Paginate(pageSize, pageIndex int) func(db *gorm.DB) *gorm.DB {
+func (s *BaseDao) Paginate(pageSize, pageIndex int) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		offset := (pageIndex - 1) * pageSize
 		if offset < 0 {
@@ -218,7 +274,7 @@ func (s *BaseService) Paginate(pageSize, pageIndex int) func(db *gorm.DB) *gorm.
 /**
 * chunk 查询
  */
-func (s *BaseService) Chunk(db *gorm.DB, size int, callback func(records []map[string]interface{}) error) error {
+func (s *BaseDao) Chunk(db *gorm.DB, size int, callback func(records []map[string]interface{}) error) error {
 	var offset int
 	for {
 		var records []map[string]interface{}
@@ -243,7 +299,7 @@ func (s *BaseService) Chunk(db *gorm.DB, size int, callback func(records []map[s
 /**
 * 查询条件组装
  */
-func (s *BaseService) MakeCondition(q Query) func(db *gorm.DB) *gorm.DB {
+func (s *BaseDao) MakeCondition(q Query) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		condition := &GormCondition{
 			GormPublic: GormPublic{},

@@ -97,8 +97,8 @@ func Run() {
 		}
 	}()
 
-	fmt.Println(text.Green(`orange github:`) + text.Blue(`https://github.com/mooncake/orange`))
-	fmt.Println(text.Green("orange server started ,listen on: ") + text.Red("[ "+addr+" ]"))
+	//fmt.Println(text.Green(`orange github:`) + text.Blue(`https://github.com/mooncake/orange`))
+	fmt.Println(text.Green("server started ,listen on: ") + text.Red("[ "+addr+" ]"))
 
 	if Cfg.Server.Mode != ModeProd.String() {
 		fmt.Println(text.Blue(fmt.Sprintf("swagger: http://localhost:%d/swagger/index.html", Cfg.Server.Port)))

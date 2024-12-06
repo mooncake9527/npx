@@ -4,6 +4,7 @@ import (
 	vd "github.com/bytedance/go-tagexpr/v2/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/mooncake9527/x/xerrors/xerror"
 	"reflect"
 	"strings"
 	"sync"
@@ -135,7 +136,16 @@ func (e *Api) Bind(ctx *gin.Context, d interface{}, bindings ...binding.Binding)
 		}
 	}
 	if err := vd.Validate(d); err != nil {
-		return err
+		return xerror.NewC(400, err.Error())
+	}
+	if dv, ok := d.(ValidI); ok {
+		if err := dv.Valid(); err != nil {
+			return xerror.NewC(400, err.Error())
+		}
 	}
 	return nil
+}
+
+type ValidI interface {
+	Valid() error
 }
