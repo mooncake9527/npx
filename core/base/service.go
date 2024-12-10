@@ -116,10 +116,8 @@ func (s *BaseDao) UpdateByIdTx(tx *gorm.DB, model any) error {
 	return nil
 }
 
-/*
-* 条件删除，模型
- */
-func (s *BaseDao) DelWhere(model any) error {
+// DelModel model id 不能为空
+func (s *BaseDao) DelModel(model any) error {
 	if err := s.DB().Delete(model).Error; err != nil {
 		return xerror.New(err.Error())
 	}
@@ -137,22 +135,23 @@ func (s *BaseDao) DelWhereTx(tx *gorm.DB, model any) error {
 * 条件删除，模型 where 为map
  */
 func (s *BaseDao) DelWhereMap(model any, where map[string]any) error {
-	if err := s.DB().Model(model).Delete(where).Error; err != nil {
+	if err := s.DB().Where(where).Delete(model).Error; err != nil {
 		return xerror.New(err.Error())
 	}
 	return nil
 }
 
 func (s *BaseDao) DelWhereMapTx(tx *gorm.DB, model any, where map[string]any) error {
-	if err := tx.Model(model).Delete(where).Error; err != nil {
+	if err := tx.Where(where).Delete(model).Error; err != nil {
 		return xerror.New(err.Error())
 	}
 	return nil
 }
 
 /*
-*多个id删除
+* id 可以是uint64  也可以是[]uint64
  */
+
 func (s *BaseDao) DelIds(model any, ids any) error {
 	if err := s.DB().Delete(model, ids).Error; err != nil {
 		return xerror.New(err.Error())

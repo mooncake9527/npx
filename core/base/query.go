@@ -180,7 +180,7 @@ func pgSql(driver string, t *resolveSearchTag, condition Condition, qValue refle
 		return
 	case ISNULL:
 		if !(qValue.Field(i).IsZero() && qValue.Field(i).IsNil()) {
-			condition.SetWhere(fmt.Sprintf("%s.%s isnull", t.Table, t.Column), make([]interface{}, 0))
+			condition.SetWhere(fmt.Sprintf("%s.%s is null", t.Table, t.Column), make([]interface{}, 0))
 		}
 		return
 	case ORDER:
