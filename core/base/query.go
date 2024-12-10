@@ -131,6 +131,7 @@ const (
 	LTE    QueryTag = "lte"
 	IN     QueryTag = "in"
 	ISNULL QueryTag = "isnull"
+	ISNOTNULL QueryTag = "isnotnull"
 	ORDER  QueryTag = "order"
 	JOIN   QueryTag = "join"
 )
@@ -181,6 +182,11 @@ func pgSql(driver string, t *resolveSearchTag, condition Condition, qValue refle
 	case ISNULL:
 		if !(qValue.Field(i).IsZero() && qValue.Field(i).IsNil()) {
 			condition.SetWhere(fmt.Sprintf("%s.%s is null", t.Table, t.Column), make([]interface{}, 0))
+		}
+		return
+	case ISNOTNULL:
+		if !(qValue.Field(i).IsZero() && qValue.Field(i).IsNil()) {
+			condition.SetWhere(fmt.Sprintf("%s.%s is not null", t.Table, t.Column), make([]interface{}, 0))
 		}
 		return
 	case ORDER:
@@ -237,7 +243,12 @@ func otherSql(driver string, t *resolveSearchTag, condition Condition, qValue re
 		return
 	case ISNULL:
 		if !(qValue.Field(i).IsZero() && qValue.Field(i).IsNil()) {
-			condition.SetWhere(fmt.Sprintf("`%s`.`%s` isnull", t.Table, t.Column), make([]interface{}, 0))
+			condition.SetWhere(fmt.Sprintf("`%s`.`%s` is null", t.Table, t.Column), make([]interface{}, 0))
+		}
+		return
+	case ISNOTNULL:
+		if !(qValue.Field(i).IsZero() && qValue.Field(i).IsNil()) {
+			condition.SetWhere(fmt.Sprintf("%s.%s is not null", t.Table, t.Column), make([]interface{}, 0))
 		}
 		return
 	case ORDER:
