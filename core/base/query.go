@@ -118,22 +118,22 @@ func ResolveSearchQuery(driver string, q any, condition Condition, pTName string
 type QueryTag string
 
 const (
-	EQ     QueryTag = "eq"
-	LIKE   QueryTag = "like"
-	ILIKE  QueryTag = "ilike"
-	LEFT   QueryTag = "left"
-	ILEFT  QueryTag = "ileft"
-	RIGHT  QueryTag = "right"
-	IRIGHT QueryTag = "iright"
-	GT     QueryTag = "gt"
-	GTE    QueryTag = "gte"
-	LT     QueryTag = "lt"
-	LTE    QueryTag = "lte"
-	IN     QueryTag = "in"
-	ISNULL QueryTag = "isnull"
+	EQ        QueryTag = "eq"
+	LIKE      QueryTag = "like"
+	ILIKE     QueryTag = "ilike"
+	LEFT      QueryTag = "left"
+	ILEFT     QueryTag = "ileft"
+	RIGHT     QueryTag = "right"
+	IRIGHT    QueryTag = "iright"
+	GT        QueryTag = "gt"
+	GTE       QueryTag = "gte"
+	LT        QueryTag = "lt"
+	LTE       QueryTag = "lte"
+	IN        QueryTag = "in"
+	ISNULL    QueryTag = "isnull"
 	ISNOTNULL QueryTag = "isnotnull"
-	ORDER  QueryTag = "order"
-	JOIN   QueryTag = "join"
+	ORDER     QueryTag = "order"
+	JOIN      QueryTag = "join"
 )
 
 func pgSql(driver string, t *resolveSearchTag, condition Condition, qValue reflect.Value, i int, tname string) {
