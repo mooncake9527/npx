@@ -235,10 +235,18 @@ func (s *BaseDao) Query(where Query, models any) error {
 	return nil
 }
 
+// Page 分页查询
+func (s *BaseDao) Page(where Query, models any, limit, offset int) error {
+	if err := s.DB().Scopes(s.MakeCondition(where)).Limit(limit).Offset(offset).Find(models).Error; err != nil {
+		return xerror.New(err.Error())
+	}
+	return nil
+}
+
 /*
 * 分页获取
  */
-func (s *BaseDao) Page(where any, data any, total *int64, limit, offset int) error {
+func (s *BaseDao) QPage(where any, data any, total *int64, limit, offset int) error {
 	if err := s.DB().Where(where).Limit(limit).Offset(offset).
 		Find(data).Limit(-1).Offset(-1).Count(total).Error; err != nil {
 		return xerror.New(err.Error())
