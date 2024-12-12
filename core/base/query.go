@@ -3,7 +3,9 @@ package base
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
+	"unicode"
 
 	"github.com/mooncake9527/npx/common/utils"
 )
@@ -252,9 +254,26 @@ func otherSql(driver string, t *resolveSearchTag, condition Condition, qValue re
 		}
 		return
 	case ORDER:
-		switch strings.ToLower(qValue.Field(i).String()) {
-		case "desc", "asc":
-			condition.SetOrder(fmt.Sprintf("`%s`.`%s` %s", t.Table, t.Column, qValue.Field(i).String()))
+
+		val := strings.TrimSpace(qValue.Field(i).String())
+		if val != "" {
+			column, order, success := parseOrder(val)
+			column = CameCaseToUnderscore(column)
+			is := detectSQLInjection(column)
+			order = castOrder(order)
+			if success && !is {
+				condition.SetOrder(fmt.Sprintf("`%s`.`%s` %s", t.Table, column, order))
+			} else {
+				switch strings.ToLower(qValue.Field(i).String()) {
+				case "desc", "asc":
+					condition.SetOrder(fmt.Sprintf("`%s`.`%s` %s", t.Table, t.Column, qValue.Field(i).String()))
+				}
+			}
+		} else {
+			switch strings.ToLower(qValue.Field(i).String()) {
+			case "desc", "asc":
+				condition.SetOrder(fmt.Sprintf("`%s`.`%s` %s", t.Table, t.Column, qValue.Field(i).String()))
+			}
 		}
 		return
 	case JOIN:
@@ -272,4 +291,51 @@ func otherSql(driver string, t *resolveSearchTag, condition Condition, qValue re
 	default:
 		condition.SetWhere(fmt.Sprintf("`%s`.`%s` = ?", t.Table, t.Column), []interface{}{qValue.Field(i).Interface()})
 	}
+}
+
+var (
+	orderReg             = regexp.MustCompile(`order\[([^\]]+)\]=([^=]+)`)
+	detectSQLInjectionRe = regexp.MustCompile(`['";]+|UNION|SELECT|INSERT|UPDATE|DELETE|DROP|GRANT|EXEC|CREATE|ALTER|TRUNCATE|COUNT|\*|--|\/\*|;|\+|\/`)
+)
+
+func parseOrder(order string) (string, string, bool) {
+	matches := orderReg.FindStringSubmatch(order)
+	if len(matches) == 3 {
+		column := matches[1]
+		value := matches[2]
+		return strings.TrimSpace(column), strings.TrimSpace(value), true
+	} else {
+		return "", "", false
+	}
+}
+
+func CameCaseToUnderscore(s string) string {
+	var output []rune
+	for i, r := range s {
+		if i == 0 {
+			output = append(output, unicode.ToLower(r))
+			continue
+		}
+		if unicode.IsUpper(r) {
+			output = append(output, '_')
+		}
+		output = append(output, unicode.ToLower(r))
+	}
+	return string(output)
+}
+
+func castOrder(order string) string {
+	order = strings.ToLower(order)
+	switch order {
+	case "desc":
+		return "desc"
+	case "asc":
+		return "asc"
+	default:
+		return ""
+	}
+}
+
+func detectSQLInjection(input string) bool {
+	return detectSQLInjectionRe.MatchString(input)
 }
