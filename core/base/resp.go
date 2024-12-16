@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mooncake9527/npx/common/consts"
 	"github.com/mooncake9527/npx/core/i18n"
 )
 
@@ -14,7 +13,6 @@ const (
 )
 
 type Resp struct {
-	ReqId string `json:"reqId,omitempty"` //`json:"请求id"`
 	Code  int    `json:"code"`            //返回码
 	Msg   string `json:"msg,omitempty"`   //消息
 	Data  any    `json:"data,omitempty"`  //数据
@@ -23,8 +21,6 @@ type Resp struct {
 type PageResp struct {
 	List        any   `json:"list"`        //数据列表
 	Total       int64 `json:"total"`       //总条数
-	PageSize    int   `json:"pageSize"`    //分页大小
-	CurrentPage int   `json:"currentPage"` //当前第几页
 }
 
 type Option func(resp *Resp)
@@ -37,11 +33,11 @@ type Option func(resp *Resp)
 // 	return r
 // }
 
-func WithReqId(reqId string) Option {
-	return func(resp *Resp) {
-		resp.ReqId = reqId
-	}
-}
+// func WithReqId(reqId string) Option {
+// 	return func(resp *Resp) {
+// 		resp.ReqId = reqId
+// 	}
+// }
 
 func WithCode(code int) Option {
 	return func(resp *Resp) {
@@ -71,7 +67,7 @@ func result(c *gin.Context, opts ...Option) {
 
 func pureJSON(c *gin.Context, data any) {
 	c.PureJSON(http.StatusOK, Resp{
-		ReqId: c.GetString(consts.ReqId),
+		// ReqId: c.GetString(consts.ReqId),
 		Code:  200,
 		Msg:   "OK",
 		Data:  data,
@@ -88,20 +84,20 @@ func resMsg(c *gin.Context, code int, msg string, data ...any) {
 	}
 	if len(data) == 0 {
 		c.JSON(http.StatusOK, Resp{
-			ReqId: c.GetString(consts.ReqId),
+			// ReqId: c.GetString(consts.ReqId),
 			Code:  code,
 			Msg:   msg,
 		})
 	} else if len(data) == 1 {
 		c.JSON(http.StatusOK, Resp{
-			ReqId: c.GetString(consts.ReqId),
+			// ReqId: c.GetString(consts.ReqId),
 			Code:  code,
 			Msg:   msg,
 			Data:  data[0],
 		})
 	} else {
 		c.JSON(http.StatusOK, Resp{
-			ReqId: c.GetString(consts.ReqId),
+			// ReqId: c.GetString(consts.ReqId),
 			Code:  code,
 			Msg:   msg,
 			Data:  data,
@@ -115,20 +111,20 @@ func resMsgWithAbort(c *gin.Context, code int, msg string, data ...any) {
 	}
 	if len(data) == 0 {
 		c.AbortWithStatusJSON(http.StatusOK, Resp{
-			ReqId: c.GetString(consts.ReqId),
+			// ReqId: c.GetString(consts.ReqId),
 			Code:  code,
 			Msg:   msg,
 		})
 	} else if len(data) == 1 {
 		c.AbortWithStatusJSON(http.StatusOK, Resp{
-			ReqId: c.GetString(consts.ReqId),
+			// ReqId: c.GetString(consts.ReqId),
 			Code:  code,
 			Msg:   msg,
 			Data:  data[0],
 		})
 	} else {
 		c.AbortWithStatusJSON(http.StatusOK, Resp{
-			ReqId: c.GetString(consts.ReqId),
+			// ReqId: c.GetString(consts.ReqId),
 			Code:  code,
 			Msg:   msg,
 			Data:  data,
@@ -138,9 +134,9 @@ func resMsgWithAbort(c *gin.Context, code int, msg string, data ...any) {
 
 func pageResp(c *gin.Context, list any, total int64, page int, pageSize int) {
 	p := PageResp{
-		CurrentPage: page,
+		// CurrentPage: page,
 		Total:       total,
-		PageSize:    pageSize,
+		// PageSize:    pageSize,
 		List:        list,
 	}
 	resMsg(c, http.StatusOK, "OK", p)
