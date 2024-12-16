@@ -114,8 +114,24 @@ type NApi struct {
 	Api
 }
 
+func (e *Api) Bind(ctx *gin.Context, req interface{}) error {
+	err := ctx.ShouldBind(req)
+	if err!= nil && err.Error() == "EOF" {
+		err = nil
+	}
+	if err := vd.Validate(req); err != nil {
+		return xerror.NewC(400, err.Error())
+	}
+	if vd, ok := req.(ValidI); ok {
+		if err := vd.Valid(); err != nil {
+			return xerror.NewC(400, err.Error())
+		}
+	}
+	return nil
+}
+
 // Bind 参数校验
-func (e *Api) Bind(ctx *gin.Context, d interface{}, bindings ...binding.Binding) error {
+func (e *Api) ShouldBindWith(ctx *gin.Context, d interface{}, bindings ...binding.Binding) error {
 	var err error
 	if len(bindings) == 0 {
 		bindings = constructor.GetBindingForGin(d)
