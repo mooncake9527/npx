@@ -1,9 +1,9 @@
 package response
 
 type Response struct {
-	Code      int    `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
-	Msg       string `protobuf:"bytes,3,opt,name=msg,proto3" json:"msg,omitempty"`
-	Data interface{} `json:"data"`
+	Code int         `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty" example:"1"`
+	Msg  string      `protobuf:"bytes,3,opt,name=msg,proto3" json:"msg,omitempty" example:"ok"`
+	Data interface{} `json:"data" example:"null"`
 }
 
 type Page struct {

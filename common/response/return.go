@@ -2,9 +2,6 @@ package response
 
 import (
 	"net/http"
-
-	"github.com/mooncake9527/npx/common/utils"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,7 +30,7 @@ func OK(c *gin.Context, data interface{}, msg string) {
 	if msg != "" {
 		res.SetMsg(msg)
 	}
-	res.SetCode(http.StatusOK)
+	res.SetCode(1)
 	c.Set("result", res)
 	c.Set("status", http.StatusOK)
 	c.AbortWithStatusJSON(http.StatusOK, res)
@@ -51,7 +48,7 @@ func PageOK(c *gin.Context, result interface{}, count int64, pageIndex int, page
 
 // Custum 兼容函数
 func Custum(c *gin.Context, data gin.H) {
-	data["requestId"] = utils.GetReqId(c)
+	// data["requestId"] = utils.GetReqId(c)
 	c.Set("result", data)
 	c.AbortWithStatusJSON(http.StatusOK, data)
 }
