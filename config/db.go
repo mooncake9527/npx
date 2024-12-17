@@ -33,6 +33,7 @@ type DBCfg struct {
 	SlowThreshold  int           `mapstructure:"slow-threshold" json:"slow-threshold" yaml:"slow-threshold"`       // 慢查询 毫秒 大于0有效
 	IgnoreNotFound bool          `mapstructure:"ignore-not-found" json:"ignore-not-found" yaml:"ignore-not-found"` //忽略无记录错误
 	DryRun         bool          `mapstructure:"dry-run" json:"dry-run" yaml:"dry-run"`                            //
+	LogLinePrefix  string        `mapstructure:"log-line-prefix" json:"log-line-prefix" yaml:"log-line-prefix"`    //
 	DBS            map[string]DB `mapstructure:"dbs" json:"dbs" yaml:"dbs"`                                        //配置多db
 }
 

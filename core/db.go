@@ -114,7 +114,7 @@ func GetGromLogCfg(logMode logger.LogLevel, prefix string, slowThreshold int, si
 	//filePath := path.Join(Cfg.Logger.Director, "%Y-%m-%d", "sql.log")
 	//w, _ := GetWriter(filePath)
 	slow := time.Duration(slowThreshold) * time.Millisecond
-	_default := logger.New(log.New(logW, prefix, log.LstdFlags), logger.Config{
+	_default := New(log.New(logW, prefix, log.LstdFlags), Config{
 		SlowThreshold:             slow,
 		Colorful:                  color,
 		IgnoreRecordNotFoundError: ignoreNotFound,
