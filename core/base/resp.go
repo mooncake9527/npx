@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	OK      = 200
-	FAILURE = 500
+	OK      = 1
+	FAILURE = 0
 )
 
 type Resp struct {
