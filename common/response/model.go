@@ -1,15 +1,15 @@
 package response
 
 type Response struct {
-	Code int         `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty" example:"1"`
-	Msg  string      `protobuf:"bytes,3,opt,name=msg,proto3" json:"msg,omitempty" example:"ok"`
+	Code int         `protobuf:"varint,2,opt,name=code,proto3" json:"code" example:"1"`
+	Msg  string      `protobuf:"bytes,3,opt,name=msg,proto3" json:"msg" example:"ok"`
 	Data interface{} `json:"data" example:"null"`
 }
 
 type Page struct {
 	Count     int64 `json:"count"`
-	PageIndex int   `json:"pageIndex"`
-	PageSize  int   `json:"pageSize"`
+	// PageIndex int   `json:"pageIndex"`
+	// PageSize  int   `json:"pageSize"`
 }
 
 type page struct {

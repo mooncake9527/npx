@@ -2,9 +2,9 @@ package response
 
 import (
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
-
 
 // Error 失败数据处理
 func Error(c *gin.Context, code int, msg string) {
@@ -41,8 +41,8 @@ func PageOK(c *gin.Context, result interface{}, count int64, pageIndex int, page
 	var res page
 	res.List = result
 	res.Count = count
-	res.PageIndex = pageIndex
-	res.PageSize = pageSize
+	// res.PageIndex = pageIndex
+	// res.PageSize = pageSize
 	OK(c, res, msg)
 }
 
