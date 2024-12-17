@@ -24,7 +24,7 @@ func dbInit(logWrite io.Writer) {
 	if Cfg.DBCfg.DSN != "" {
 		logMode := config.GetLogMode(Cfg.DBCfg.LogMode)
 		initDb(Cfg.DBCfg.Driver, Cfg.DBCfg.DSN, Cfg.DBCfg.Prefix, consts.DbDefault, logMode, Cfg.DBCfg.SlowThreshold,
-			Cfg.DBCfg.MaxIdleConns, Cfg.DBCfg.MaxOpenConns, Cfg.DBCfg.MaxLifetime, Cfg.DBCfg.Singular, Cfg.Logger.Color(), Cfg.DBCfg.IgnoreNotFound, logWrite)
+			Cfg.DBCfg.MaxIdleConns, Cfg.DBCfg.MaxOpenConns, Cfg.DBCfg.MaxLifetime, Cfg.DBCfg.Singular, Cfg.Logger.Color(), Cfg.DBCfg.IgnoreNotFound, logWrite, Cfg.DBCfg.DryRun)
 	}
 	for key, dbc := range Cfg.DBCfg.DBS {
 		if !dbc.Disable {
@@ -65,24 +65,24 @@ func dbInit(logWrite io.Writer) {
 			if !ignoreNotFound && Cfg.DBCfg.IgnoreNotFound {
 				ignoreNotFound = Cfg.DBCfg.IgnoreNotFound
 			}
-			initDb(driver, dbc.DSN, prefix, key, logMode, slow, maxIdle, maxOpen, maxLifetime, singular, Cfg.Logger.Color(), ignoreNotFound, logWrite)
+			initDb(driver, dbc.DSN, prefix, key, logMode, slow, maxIdle, maxOpen, maxLifetime, singular, Cfg.Logger.Color(), ignoreNotFound, logWrite, Cfg.DBCfg.DryRun)
 		}
 	}
 
 }
 
-func initDb(driver, dns, prefix, key string, logMode logger.LogLevel, slow, maxIdle, maxOpen, maxLifetime int, singular, color, ignoreNotFound bool, logWrite io.Writer) {
+func initDb(driver, dns, prefix, key string, logMode logger.LogLevel, slow, maxIdle, maxOpen, maxLifetime int, singular, color, ignoreNotFound bool, logWrite io.Writer, dryRun bool) {
 	var db *gorm.DB
 	var err error
 	switch driver {
 	case Mysql.String():
-		db, err = gorm.Open(mysql.Open(dns), GetGromLogCfg(logMode, prefix, slow, singular, color, ignoreNotFound, logWrite))
+		db, err = gorm.Open(mysql.Open(dns), GetGromLogCfg(logMode, prefix, slow, singular, color, ignoreNotFound, logWrite, dryRun))
 	case Pgsql.String():
-		db, err = gorm.Open(postgres.Open(dns), GetGromLogCfg(logMode, prefix, slow, singular, color, ignoreNotFound, logWrite))
+		db, err = gorm.Open(postgres.Open(dns), GetGromLogCfg(logMode, prefix, slow, singular, color, ignoreNotFound, logWrite, dryRun))
 	case Sqlite.String():
-		db, err = gorm.Open(sqlite.Open(dns), GetGromLogCfg(logMode, prefix, slow, singular, color, ignoreNotFound, logWrite))
+		db, err = gorm.Open(sqlite.Open(dns), GetGromLogCfg(logMode, prefix, slow, singular, color, ignoreNotFound, logWrite, dryRun))
 	case Mssql.String():
-		db, err = gorm.Open(sqlserver.Open(dns), GetGromLogCfg(logMode, prefix, slow, singular, color, ignoreNotFound, logWrite))
+		db, err = gorm.Open(sqlserver.Open(dns), GetGromLogCfg(logMode, prefix, slow, singular, color, ignoreNotFound, logWrite, dryRun))
 	default:
 		err = xerror.New("db err")
 	}
@@ -102,8 +102,9 @@ func initDb(driver, dns, prefix, key string, logMode logger.LogLevel, slow, maxI
 	SetDb(key, db)
 }
 
-func GetGromLogCfg(logMode logger.LogLevel, prefix string, slowThreshold int, singular, color, ignoreNotFound bool, logW io.Writer) *gorm.Config {
+func GetGromLogCfg(logMode logger.LogLevel, prefix string, slowThreshold int, singular, color, ignoreNotFound bool, logW io.Writer, dryRun bool) *gorm.Config {
 	config := &gorm.Config{
+		DryRun: dryRun,
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix:   prefix,
 			SingularTable: singular,

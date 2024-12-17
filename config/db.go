@@ -18,6 +18,7 @@ type DB struct {
 	LogMode        string `mapstructure:"log-mode" json:"log-mode" yaml:"log-mode"`                         // Gorm日志级别： silent、error、warn、info
 	IgnoreNotFound bool   `mapstructure:"ignore-not-found" json:"ignore-not-found" yaml:"ignore-not-found"` //忽略无记录错误
 	SlowThreshold  int    `mapstructure:"slow-threshold" json:"slow-threshold" yaml:"slow-threshold"`       // 慢查询 毫秒 大于0有效
+	DryRun         bool   `mapstructure:"dry-run" json:"dry-run" yaml:"dry-run"`                            //
 }
 
 type DBCfg struct {
@@ -31,6 +32,7 @@ type DBCfg struct {
 	LogMode        string        `mapstructure:"log-mode" json:"log-mode" yaml:"log-mode"`                         // Gorm日志级别： silent、error、warn、info
 	SlowThreshold  int           `mapstructure:"slow-threshold" json:"slow-threshold" yaml:"slow-threshold"`       // 慢查询 毫秒 大于0有效
 	IgnoreNotFound bool          `mapstructure:"ignore-not-found" json:"ignore-not-found" yaml:"ignore-not-found"` //忽略无记录错误
+	DryRun         bool          `mapstructure:"dry-run" json:"dry-run" yaml:"dry-run"`                            //
 	DBS            map[string]DB `mapstructure:"dbs" json:"dbs" yaml:"dbs"`                                        //配置多db
 }
 

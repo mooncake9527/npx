@@ -13,9 +13,9 @@ const (
 )
 
 type Resp struct {
-	Code int    `json:"code" example:"1"`    //返回码
-	Msg  string `json:"msg" example:"ok"`    //消息
-	Data any    `json:"data" example:"null"` //数据
+	Code int    `json:"code" example:"1"` //返回码
+	Msg  string `json:"msg" example:"ok"` //消息
+	Data any    `json:"data"`             //数据
 }
 
 type PageResp struct {
