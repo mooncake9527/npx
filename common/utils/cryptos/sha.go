@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/mooncake9527/x/xerrors/xerror"
+	"github.com/pkg/errors"
 	"io"
 	"os"
 
@@ -27,7 +27,7 @@ func SHA256(data []byte) string {
 func GenPwd(pwd string) (enPwd string, err error) {
 	var hash []byte
 	if hash, err = bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost); err != nil {
-		err = xerror.New(err.Error())
+		err = errors.New(err.Error())
 		return
 	} else {
 		enPwd = string(hash)

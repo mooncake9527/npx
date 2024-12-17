@@ -2,7 +2,7 @@ package core
 
 import (
 	"context"
-	"errors"
+	"github.com/pkg/errors"
 	"fmt"
 	"io"
 	"log"

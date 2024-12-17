@@ -2,13 +2,12 @@ package ips
 
 import (
 	"encoding/json"
+	"github.com/pkg/errors"
 	"fmt"
 	"io"
 	"net"
 	"net/http"
 	"strings"
-
-	"github.com/mooncake9527/x/xerrors/xerror"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mooncake9527/npx/common/utils/https"
@@ -84,7 +83,7 @@ func GetLocationByIp(secretKey, ip string, location *IPLocationData) error {
 		return err
 	}
 	if ipd.Code != 200 {
-		return xerror.New(fmt.Sprintf("获取出错 code:{%d} msg{%s}", ipd.Code, ipd.Msg))
+		return errors.New(fmt.Sprintf("获取出错 code:{%d} msg{%s}", ipd.Code, ipd.Msg))
 	}
 	*location = ipd.Data
 	return nil

@@ -1,6 +1,6 @@
 package base
 
-import "github.com/mooncake9527/x/xerrors/xerror"
+import "github.com/pkg/errors"
 
 type ReqBase struct {
 	ReqId string `json:"reqId" form:"reqId"` // 请求id 链路跟踪
@@ -20,7 +20,7 @@ type ReqIds struct {
 
 func (x *ReqIds) Valid() error {
 	if len(x.Ids) == 0 {
-		return xerror.New("ids cannot be empty")
+		return errors.New("ids cannot be empty")
 	}
 	return nil
 }

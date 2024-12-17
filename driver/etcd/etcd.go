@@ -3,7 +3,7 @@ package etcd
 import (
 	"context"
 	"encoding/json"
-	"errors"
+	"github.com/pkg/errors"
 	"fmt"
 	"log/slog"
 	"sync"

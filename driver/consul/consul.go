@@ -1,7 +1,7 @@
 package consul
 
 import (
-	"errors"
+	"github.com/pkg/errors"
 	"log/slog"
 	"sync"
 	"time"

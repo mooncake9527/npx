@@ -2,12 +2,11 @@ package core
 
 import (
 	"database/sql"
+	"github.com/pkg/errors"
 	"io"
 	"log"
 	"log/slog"
 	"time"
-
-	"github.com/mooncake9527/x/xerrors/xerror"
 
 	"github.com/mooncake9527/npx/common/consts"
 	"github.com/mooncake9527/npx/config"
@@ -84,7 +83,7 @@ func initDb(driver, dns, prefix, key string, logMode logger.LogLevel, slow, maxI
 	case Mssql.String():
 		db, err = gorm.Open(sqlserver.Open(dns), GetGromLogCfg(logMode, prefix, slow, singular, color, ignoreNotFound, logWrite, dryRun))
 	default:
-		err = xerror.New("db err")
+		err = errors.New("db err")
 	}
 	if err != nil {
 		slog.Error("connect db err ", "dns", dns, "key", key, "err", err)
@@ -144,7 +143,7 @@ func Db(name string) *gorm.DB {
 	defer lock.RUnlock()
 	dbHub := dbs
 	if db, ok := dbHub[name]; !ok || db == nil {
-		slog.Error("db init err", "err", xerror.New(name))
+		slog.Error("db init err", "err", errors.New(name))
 		panic("db not init")
 	} else {
 		return db

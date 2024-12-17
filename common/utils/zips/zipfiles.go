@@ -2,7 +2,7 @@ package zips
 
 import (
 	"archive/zip"
-	"github.com/mooncake9527/x/xerrors/xerror"
+	"github.com/pkg/errors"
 	"io"
 	"os"
 	"strings"
@@ -17,7 +17,7 @@ import (
 func ZipFiles(filename string, files []string, oldForm, newForm string) error {
 	newZipFile, err := os.Create(filename)
 	if err != nil {
-		return xerror.New(err.Error())
+		return errors.New(err.Error())
 	}
 	defer func() {
 		_ = newZipFile.Close()
@@ -34,18 +34,18 @@ func ZipFiles(filename string, files []string, oldForm, newForm string) error {
 		err = func(file string) error {
 			zipFile, err := os.Open(file)
 			if err != nil {
-				return xerror.New(err.Error())
+				return errors.New(err.Error())
 			}
 			defer zipFile.Close()
 			// 获取file的基础信息
 			info, err := zipFile.Stat()
 			if err != nil {
-				return xerror.New(err.Error())
+				return errors.New(err.Error())
 			}
 
 			header, err := zip.FileInfoHeader(info)
 			if err != nil {
-				return xerror.New(err.Error())
+				return errors.New(err.Error())
 			}
 
 			// 使用上面的FileInforHeader() 就可以把文件保存的路径替换成我们自己想要的了，如下面
@@ -57,10 +57,10 @@ func ZipFiles(filename string, files []string, oldForm, newForm string) error {
 
 			writer, err := zipWriter.CreateHeader(header)
 			if err != nil {
-				return xerror.New(err.Error())
+				return errors.New(err.Error())
 			}
 			if _, err = io.Copy(writer, zipFile); err != nil {
-				return xerror.New(err.Error())
+				return errors.New(err.Error())
 			}
 			return nil
 		}(file)

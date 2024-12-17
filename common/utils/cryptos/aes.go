@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
-	"github.com/mooncake9527/x/xerrors/xerror"
+	"github.com/pkg/errors"
 )
 
 // =================== CBC ======================
@@ -14,7 +14,7 @@ func AesEncryptCBC(origData []byte, key []byte) (encrypted []byte, err error) {
 	// 分组秘钥
 	block, _err := aes.NewCipher(key)
 	if _err != nil {
-		err = xerror.New(_err.Error())
+		err = errors.New(_err.Error())
 		return
 	}
 	blockSize := block.BlockSize()                              // 获取秘钥块的长度
@@ -29,7 +29,7 @@ func AesEncryptCBC(origData []byte, key []byte) (encrypted []byte, err error) {
 func AesDecryptCBC(encrypted []byte, key []byte) (decrypted []byte, err error) {
 	block, _err := aes.NewCipher(key) // 分组秘钥
 	if _err != nil {
-		err = xerror.New(_err.Error())
+		err = errors.New(_err.Error())
 		return
 	}
 	blockSize := block.BlockSize()                              // 获取秘钥块的长度

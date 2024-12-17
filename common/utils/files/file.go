@@ -2,7 +2,7 @@ package files
 
 import (
 	"bytes"
-	"github.com/mooncake9527/x/xerrors/xerror"
+	"github.com/pkg/errors"
 	"io"
 	"log"
 	"mime/multipart"
@@ -17,7 +17,7 @@ import (
 func GetSize(f multipart.File) (int, error) {
 	content, err := io.ReadAll(f)
 	if err != nil {
-		return 0, xerror.New(err.Error())
+		return 0, errors.New(err.Error())
 	}
 	return len(content), err
 }
@@ -39,7 +39,7 @@ func PathExists(path string) (bool, error) {
 		if fi.IsDir() {
 			return true, nil
 		}
-		return false, xerror.New("存在同名文件")
+		return false, errors.New("存在同名文件")
 	}
 	if os.IsNotExist(err) {
 		return false, nil
@@ -58,7 +58,7 @@ func CheckPermission(src string) bool {
 func IsNotExistMkDir(src string) error {
 	if exist := !CheckExist(src); !exist {
 		if err := MkDir(src); err != nil {
-			return xerror.New(err.Error())
+			return errors.New(err.Error())
 		}
 	}
 	return nil
@@ -68,7 +68,7 @@ func IsNotExistMkDir(src string) error {
 func MkDir(src string) error {
 	err := os.MkdirAll(src, os.ModePerm)
 	if err != nil {
-		return xerror.New(err.Error())
+		return errors.New(err.Error())
 	}
 	return nil
 }
@@ -77,7 +77,7 @@ func MkDir(src string) error {
 func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
 	f, err := os.OpenFile(name, flag, perm)
 	if err != nil {
-		return nil, xerror.New(err.Error())
+		return nil, errors.New(err.Error())
 	}
 	defer f.Close()
 	return f, nil
@@ -87,13 +87,13 @@ func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
 func GetImgType(p string) (string, error) {
 	file, err := os.Open(p)
 	if err != nil {
-		return "", xerror.New(err.Error())
+		return "", errors.New(err.Error())
 	}
 	defer file.Close()
 	buff := make([]byte, 512)
 	_, err = file.Read(buff)
 	if err != nil {
-		return "", xerror.New(err.Error())
+		return "", errors.New(err.Error())
 	}
 	filetype := http.DetectContentType(buff)
 	ext := imgext.Get()
@@ -102,20 +102,20 @@ func GetImgType(p string) (string, error) {
 			return filetype, nil
 		}
 	}
-	return "", xerror.New("invalid image type")
+	return "", errors.New("invalid image type")
 }
 
 // GetType 获取文件类型
 func GetType(p string) (string, error) {
 	file, err := os.Open(p)
 	if err != nil {
-		return "", xerror.New(err.Error())
+		return "", errors.New(err.Error())
 	}
 	defer file.Close()
 	buff := make([]byte, 512)
 	_, err = file.Read(buff)
 	if err != nil {
-		return "", xerror.New(err.Error())
+		return "", errors.New(err.Error())
 	}
 	filetype := http.DetectContentType(buff)
 	return filetype, nil
@@ -124,7 +124,7 @@ func GetType(p string) (string, error) {
 func PathCreate(dir string) error {
 	err := os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
-		return xerror.New(err.Error())
+		return errors.New(err.Error())
 	}
 	return nil
 }

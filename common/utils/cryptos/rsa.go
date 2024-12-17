@@ -11,8 +11,8 @@ import (
 	"crypto/x509"
 	"encoding/hex"
 	"encoding/pem"
+	"github.com/pkg/errors"
 	"fmt"
-	"github.com/mooncake9527/x/xerrors/xerror"
 )
 
 // 将RSA私钥转换为byte
@@ -46,7 +46,7 @@ func ParsePriKey(privateKey []byte) (*rsa.PrivateKey, error) {
 	}
 	priKey, err := x509.ParsePKCS1PrivateKey(privateKeyBlock.Bytes)
 	if err != nil {
-		return nil, xerror.New(err.Error())
+		return nil, errors.New(err.Error())
 	}
 	return priKey, nil
 }
@@ -63,7 +63,7 @@ func ParsePubKey(publicKey []byte) (*rsa.PublicKey, error) {
 	}
 	rsaPublicKey, ok := pubKey.(*rsa.PublicKey)
 	if !ok {
-		return nil, xerror.New("无效的RSA公钥")
+		return nil, errors.New("无效的RSA公钥")
 	}
 	return rsaPublicKey, nil
 }
@@ -72,7 +72,7 @@ func ParsePubKey(publicKey []byte) (*rsa.PublicKey, error) {
 func PrivateKeyPkcs8ToPem(privateKey *rsa.PrivateKey) ([]byte, error) {
 	privateKeyBytes, err := x509.MarshalPKCS8PrivateKey(privateKey)
 	if err != nil {
-		return nil, xerror.New(err.Error())
+		return nil, errors.New(err.Error())
 	}
 	privateKeyBlock := &pem.Block{
 		Type:  "RSA PRIVATE KEY",
@@ -85,16 +85,16 @@ func PrivateKeyPkcs8ToPem(privateKey *rsa.PrivateKey) ([]byte, error) {
 func ParsePriKeyPkcs8(privateKeyPkcs8 []byte) (*rsa.PrivateKey, error) {
 	privateKeyBlock, _ := pem.Decode(privateKeyPkcs8)
 	if privateKeyBlock == nil {
-		return nil, xerror.New("Pkcs8无效的私钥")
+		return nil, errors.New("Pkcs8无效的私钥")
 	}
 	priKey, err := x509.ParsePKCS8PrivateKey(privateKeyBlock.Bytes)
 	if err != nil {
-		return nil, xerror.New(err.Error())
+		return nil, errors.New(err.Error())
 	}
 
 	rsaPrivateKey, ok := priKey.(*rsa.PrivateKey)
 	if !ok {
-		return nil, xerror.New("Pkcs8 contained non-RSA key. Expected RSA key.")
+		return nil, errors.New("Pkcs8 contained non-RSA key. Expected RSA key.")
 	}
 	return rsaPrivateKey, nil
 }
@@ -118,12 +118,12 @@ func GenerateRsaKey(len int) ([]byte, []byte, error) {
 	// 生成RSA密钥对
 	key, err := rsa.GenerateKey(rand.Reader, len)
 	if err != nil {
-		return nil, nil, xerror.New(err.Error())
+		return nil, nil, errors.New(err.Error())
 	}
 
 	publicKey, err := PublicKeyToPem(&key.PublicKey)
 	if err != nil {
-		return nil, nil, xerror.New(err.Error())
+		return nil, nil, errors.New(err.Error())
 	}
 	privateKey := PrivateKeyToPem(key)
 
@@ -137,7 +137,7 @@ func EncodeToString(data []byte) string {
 func DecodeString(message string) ([]byte, error) {
 	b, err := hex.DecodeString(message)
 	if err != nil {
-		return nil, xerror.New(err.Error())
+		return nil, errors.New(err.Error())
 	}
 	return b, nil
 }
@@ -163,7 +163,7 @@ func RsaEncrypt(message []byte, pubKey []byte) ([]byte, error) {
 	for _, chunk := range chunks {
 		bytes, err := rsa.EncryptPKCS1v15(rand.Reader, publicKey, chunk)
 		if err != nil {
-			return nil, xerror.New(err.Error())
+			return nil, errors.New(err.Error())
 		}
 		buffer.Write(bytes)
 	}
@@ -281,7 +281,7 @@ func RsaSignWithHash(pkey *rsa.PrivateKey, message []byte, algorithm uint16) ([]
 		hash := sha512.Sum512(message)
 		return rsa.SignPKCS1v15(rand.Reader, pkey, crypto.SHA512, hash[:])
 	}
-	return nil, xerror.New("不支持的hash算法")
+	return nil, errors.New("不支持的hash算法")
 }
 
 // RsaVerify 公钥验签
@@ -295,7 +295,7 @@ func RsaVerify(publicKeyPEM, message []byte, signature []byte) error {
 	hash := sha256.Sum256(message)
 	err := rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hash[:], signature)
 	if err != nil {
-		return xerror.New(err.Error())
+		return errors.New(err.Error())
 	}
 	return nil
 }
@@ -323,7 +323,7 @@ func RsaVerifyWithHash(publicKeyPEM, message []byte, signature []byte, algorithm
 		hash := sha512.Sum512(message)
 		return rsa.VerifyPKCS1v15(publicKey, crypto.SHA512, hash[:], signature)
 	}
-	return xerror.New("不支持的hash算法")
+	return errors.New("不支持的hash算法")
 }
 
 func RsaPriKeyPkcs8To1(priPkcs8Key []byte) (string, error) {
