@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"github.com/pkg/errors"
 	"fmt"
 	"io"
 	"log"
@@ -10,6 +9,8 @@ import (
 	"os/signal"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/mooncake9527/npx/core/ebus"
 
@@ -135,10 +136,9 @@ func logInit() io.Writer {
 		Level: slog.LevelDebug,
 	}
 	var logWriter io.Writer
+	logWriter = defaultLumberjack()
 	if Cfg.Logger.LogInConsole {
-		logWriter = os.Stdout
-	} else {
-		logWriter = defaultLumberjack()
+		logWriter = io.MultiWriter(logWriter, os.Stdout)
 	}
 	level := strings.ToLower(Cfg.Logger.Level)
 	switch level {
